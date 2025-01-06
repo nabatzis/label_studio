@@ -1,0 +1,25 @@
+services:
+  label-studio:
+    image: heartexlabs/label-studio:latest
+    ports:
+      - 8080:8080
+    environment:
+    # For the Db always use server address, we are running
+    # within a container so localhost, etc. does not work
+    #  update postgresql.conf file for access from container
+    # update pg_hba.conf with the user entry for the user used to connect
+      - DJANGO_DB=default
+      - POSTGRE_HOST=192.168.0.156
+      - POSTGRE_NAME=nikolaosabatzis
+      - POSTGRE_USER=nikolaosabatzis
+      - POSTGRE_PASSWORD=Ihave2dogs@home
+      - POSTGRE_PORT=5432
+      - POSTGRE_PASSWORD_FILE=/run/secrets/db_password
+    volumes:
+      - ${PWD}/mydata:/label-studio/data
+    secrets:
+      - db_password
+
+secrets:
+  db_password:
+    file: db_password.txt

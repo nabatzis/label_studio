@@ -13,20 +13,32 @@ docker run -it -p 8080:8080 \
 As this is a non-root container, the mounted files and directories must have the proper permissions for the UID 1001.
 
 ## Configure use of PostgreSQL
-```label-studio start my_project --init -db postgresql```
+The tables will be created assuming a Postgresql server is running and we have access to it from the docker container and the DB configuration has been updated.
 
-1. How do we do the init if we are running label-studio within a container? Perhaps connect to the container interactively?
-2. How do ew verify, i.e. tables created?
+Postgresql files:
+
+**postgresql.conf** - to allow access from the docker container IPs we want or '*'
+
+**pg_hba.conf** - to allow the specific user to the specific DB, i.e.
+
+ | TYPE | DATABASE | USER | ADDRESS | METHOD |
+ |------|----------|------|---------|--------|
+|host | nikolaosabatzis	| nikolaosabatzis | 192.168.0.156/32 | trust|
 
 
 ### Environment variables needed
+
+For the DB **always** use server address, we are running within a container so localhost, etc. does not work update postgresql.conf file for access from container update pg_hba.conf with the user entry for the user used to connect (see above):
+
+
+
 ```
 DJANGO_DB=default
 POSTGRE_NAME=postgres
 POSTGRE_USER=postgres
 POSTGRE_PASSWORD=
 POSTGRE_PORT=5432
-POSTGRE_HOST=db
+POSTGRE_HOST=192.168.0.156
 ```
 
 Alternatively we can start the docker container with:
@@ -41,6 +53,7 @@ docker run -it -p 8080:8080 \
     -e POSTGRES_NAME=<your_postgres_db_name> \
     heartexlabs/label-studio:latest
 ```
+In our case we have a `docker-compose-ls.yml`.
 
 # Install Label Studio without internet access
 Download label-studio docker image (host with internet access and docker):
